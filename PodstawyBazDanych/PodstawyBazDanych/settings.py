@@ -59,7 +59,7 @@ ROOT_URLCONF = 'PodstawyBazDanych.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['authentication/templates', 'core/templates'],
+        'DIRS': ['authentication/templates', 'core/templates', 'library/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

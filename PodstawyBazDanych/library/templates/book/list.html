@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Bilioteka - Lista książek{% endblock %}
+
+{% block content %}
+<div class="row" style="background: azure; margin-top: 30px;">
+    <div class="col-sx-12" style="margin: auto">
+        {{ message }}
+    </div>
+</div>
+<div class="row" style="background: #A1C6EA; margin-top: 30px;">
+    <div class="col-xs-4">
+        Tytuł
+    </div>
+    <div class="col-xs-4">
+        Autor/Autorzy
+    </div>
+    <div class="col-xs-4">
+        Status
+    </div>
+</div>
+{% for book in books %}
+    <div class="row" style="background: #A1C6EA; margin-top: 10px;">
+
+        <div class="col-xs-4">
+            {{ book.title }}
+        </div>
+        <div class="col-xs-4">
+            {{ book.authors }}
+        </div>
+        <div class="col-xs-4">
+            {{ book.is_lent }}
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
