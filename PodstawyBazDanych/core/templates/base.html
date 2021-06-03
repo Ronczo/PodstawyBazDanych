@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl-PL">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Biblioteka - Podstawy Baz Danych{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flexboxgrid/6.3.1/flexboxgrid.min.css"
+          type="text/css">
+    {% block styles %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+
+    {% endblock %}
+    <style>
+        body {background-color: #c7c6c1;}
+    </style>
+</head>
+<body>
+<div class="container-full" style="background: #a15421">
+    <div class="row" style="background: #A1C6EA">
+        <div class="col-xs-4">
+            <p>Autor: Marcin Jarosiński</p>
+        </div>
+        <div class="col-xs-4">
+            <p>Biblioteka - Projekt z Podstaw Baz Danych</p>
+        </div>
+        <div class="col-xs-2">
+            {% if user.is_authenticated %}
+            <p>Witaj, {{ user }}</p>
+            {% else %}
+            <p><a href="{% url 'authentication:login' %}">Zaloguj się</a></p>
+            {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <div class="col-xs-1">
+            <p><a href="{% url 'authentication:logout' %}">Wyloguj się</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% block content %} {% endblock %}
+</body>
