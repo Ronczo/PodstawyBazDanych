@@ -14,6 +14,7 @@
         <p>Jesteś pewny, że chcesz usunąć {{ book.title }} - {{ book.authors}}?</p>
         <input type="submit" value="Usuń">
     </form>
+    <p><a href="{% url 'core:home' %}" style="color: red">Cofnij</a></p>
 </div>
 
 {% endblock %}

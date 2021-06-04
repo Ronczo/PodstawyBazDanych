@@ -22,7 +22,7 @@
             <a href="{% url 'library:borrower_list' %}">Wyświelt wszystkich czytelników</a>
         </div>
         <div class="col-xs-4">
-            Biblioteka
+            <a href="{% url 'library:library_list_to_lend' %}">Wypożycz książkę</a>
         </div>
     </div>
 
@@ -34,7 +34,7 @@
             <a href="{% url 'library:borrower_create' %}">Dodaj Czytelnika</a>
         </div>
         <div class="col-xs-4">
-            Biblioteka
+            <a href="{% url 'library:library_list_to_return' %}">Zwróć książkę</a>
         </div>
     </div>
 
@@ -46,10 +46,9 @@
 
         </div>
         <div class="col-xs-4">
-            Biblioteka
+
         </div>
     </div>
-
     <div class="row" style="background: #A1C6EA; margin-top: 10px;">
         <div class="col-xs-4">
             <a href="{% url 'library:book_list_to_delete' %}">Usuń książkę</a>
@@ -58,7 +57,7 @@
 
         </div>
         <div class="col-xs-4">
-            Biblioteka
+
         </div>
     </div>
     {% else %}
@@ -67,5 +66,16 @@
            Zaloguj się
         </div>
     </div>
+
     {% endif %}
+    <div class="row" style="background: #A1C6EA; margin-top: 10px;">
+        <div class="col-xs-4">
+            <a href="{% url 'library:author_create' %}">Dodaj autora </a>
+        </div>
+        <div class="col-xs-4">
+        </div>
+        <div class="col-xs-4">
+
+        </div>
+    </div>
 {% endblock %}

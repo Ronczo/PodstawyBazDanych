@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Bilioteka - Lista książek do usunięcia{% endblock %}
+{% block title %}Bilioteka - Lista książek do wypożyczenia{% endblock %}
 
 {% block content %}
 <div class="row" style="background: azure; margin-top: 30px;">
@@ -29,11 +29,14 @@
             {{ book.author }}
         </div>
         <div class="col-xs-3">
-            {{ book.is_lent }}
+            {% if book.is_lent %}
+            Wypożyczony
+            {% else %}
+            W bibliotece
+            {% endif %}
         </div>
         <div class="col-xs-3">
-            <a href="{% url 'library:book_delete' book.id %}">Usuń</a>
-
+            <a href="{% url 'library:library_return_book' book.id %}">Zwróć książkę</a>
         </div>
     </div>
 {% endfor %}

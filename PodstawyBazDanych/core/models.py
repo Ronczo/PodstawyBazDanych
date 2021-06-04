@@ -1,20 +1,46 @@
 from django.db import models
 
 
+class Author(models.Model):
+    """Author Model"""
+
+    full_name = models.CharField(max_length=512, blank=False, null=False)
+
+    def __str__(self):
+        return f"{self.full_name}"
+
+
 class Book(models.Model):
     """Book model"""
 
+    class BookGenres(models.TextChoices):
+        """Borrower types"""
+
+        UNSET = "UNSET", "--unset--"
+        CRIME = "CRIME", "kryminał"
+        ROMANCE = "ROMANCE", "romans"
+        FICTION = "FICTION", "fikcja"
+
     title = models.CharField(max_length=512, blank=False, null=False)
-    authors = models.CharField(max_length=512, blank=False, null=False)
+    author = models.ForeignKey(
+        Author, blank=False, null=False, on_delete=models.CASCADE, related_name="book"
+    )
     is_lent = models.BooleanField(default=False, blank=False, null=False)
+    genre = models.CharField(
+        max_length=30,
+        choices=BookGenres.choices,
+        blank=False,
+        null=False,
+        default=BookGenres.UNSET,
+    )
 
     def __str__(self):
-        return f"{self.title} - {self.authors}"
-
+        return f"{self.title} - {self.author}"
 
 
 class Borrower(models.Model):
     """Borrower model"""
+
     class BorrowerTypes(models.TextChoices):
         """Borrower types"""
 

@@ -15,8 +15,11 @@
     <div class="col-xs-3">
         Autor/Autorzy
     </div>
-    <div class="col-xs-3">
+    <div class="col-xs-2">
         Status
+    </div>
+    <div class="col-xs-2">
+        Gatunek
     </div>
 </div>
 {% for book in books %}
@@ -26,14 +29,20 @@
             {{ book.title }}
         </div>
         <div class="col-xs-3">
-            {{ book.authors }}
+            {{ book.author }}
         </div>
-        <div class="col-xs-3">
-            {{ book.is_lent }}
+        <div class="col-xs-2">
+            {% if book.is_lent %}
+            Wypożyczony
+            {% else %}
+            W bibliotece
+            {% endif %}
         </div>
-        <div class="col-xs-3">
+        <div class="col-xs-2">
+            {{ book.genre }}
+        </div>
+        <div class="col-xs-2">
             <a href="{% url 'library:book_update' book.id %}">Edytuj</a>
-
         </div>
     </div>
 {% endfor %}
