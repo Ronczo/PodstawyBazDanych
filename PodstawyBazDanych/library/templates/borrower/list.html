@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Bilioteka - Lista czytelników{% endblock %}
+
+{% block content %}
+<div class="row" style="background: azure; margin-top: 30px;">
+    <div class="col-sx-12" style="margin: auto">
+        {{ message }}
+    </div>
+</div>
+<div class="row" style="background: #A1C6EA; margin-top: 30px;">
+    <div class="col-xs-4">
+        Imię i nazwisko
+    </div>
+    <div class="col-xs-4">
+        Typ
+    </div>
+
+</div>
+{% for borrower in borrowers %}
+    <div class="row" style="background: #A1C6EA; margin-top: 10px;">
+
+        <div class="col-xs-4">
+            {{ borrower.full_name }}
+        </div>
+        <div class="col-xs-4">
+            {{ borrower.type }}
+        </div>
+
+    </div>
+{% endfor %}
+{% endblock %}

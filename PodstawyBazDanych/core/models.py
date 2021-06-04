@@ -12,34 +12,30 @@ class Book(models.Model):
         return f"{self.title} - {self.authors}"
 
 
+
 class Borrower(models.Model):
     """Borrower model"""
-
-    full_name = models.CharField(max_length=512, blank=False, null=False)
-
-
-class BorrowerType(models.Model):
-    """Borrower type model"""
-
     class BorrowerTypes(models.TextChoices):
         """Borrower types"""
 
         UNSET = "UNSET", "--unset--"
-        LEARNER = "LEARNER", "learner"
+        LEARNER = "LEARNER", "uczeń"
         STUDENT = "STUDENT", "student"
-        PENSIONER = "PENSIONER", "pensioner"
-        WORKER = "WORKER", "worker"
+        PENSIONER = "PENSIONER", "emeryt"
+        WORKER = "WORKER", "pracownik"
 
-    name = models.CharField(
+    type = models.CharField(
         max_length=30,
         choices=BorrowerTypes.choices,
         blank=False,
         null=False,
         default=BorrowerTypes.UNSET,
     )
-    borrower = models.ForeignKey(
-        Borrower, blank=False, null=False, on_delete=models.PROTECT, related_name="borrower_type"
-    )
+
+    full_name = models.CharField(max_length=512, blank=False, null=False)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.type}"
 
 
 class Lendment(models.Model):
@@ -51,3 +47,6 @@ class Lendment(models.Model):
     book = models.ForeignKey(
         Book, blank=False, null=False, on_delete=models.PROTECT, related_name="lendment"
     )
+
+    def __str__(self):
+        return f"{self.book} borrowed by {self.borrower}"

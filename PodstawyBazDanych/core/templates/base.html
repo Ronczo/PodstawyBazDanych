@@ -35,6 +35,10 @@
         <div class="col-xs-1">
             <p><a href="{% url 'authentication:logout' %}">Wyloguj się</a></p>
         </div>
+        {% else %}
+        <div class="col-xs-1">
+            <p><a href="{% url 'authentication:signup' %}">Utwórz konto</a></p>
+        </div>
         {% endif %}
     </div>
 </div>

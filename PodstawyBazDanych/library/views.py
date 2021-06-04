@@ -1,7 +1,8 @@
 from django.urls import reverse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
-from core.models import Book
+from core.models import Book, Borrower
+
 
 
 class BookListView(ListView):
@@ -43,7 +44,7 @@ class BookCreateView(CreateView):
         message_to_teacher = """
         W tym dodaję rekord do tabeli core_book ||
         SQL z ORM: INSERT INTO "core_book" ("title", "authors", "is_lent") VALUES ('asdd', 'asdd', false)
-        RETURNING "core_book"."id"; args=('asdd', 'asdd', False)
+        RETURNING "core_book"."id"; 
         """
         ctx.update({"message": message_to_teacher})
         return ctx
@@ -89,7 +90,7 @@ class BookEditView(UpdateView):
         message_to_teacher = """
         W tym edytuję rekord z tabeli core_book ||
         SQL z ORM: UPDATE "core_book" SET "title" = 'Tytuł 122', "authors" = 'Autor 12222', "is_lent" = true
-         WHERE "core_book"."id" = 1; args=('Tytuł 122', 'Autor 12222', True, 1)
+         WHERE "core_book"."id" = 1;
         """
         ctx.update({"message": message_to_teacher})
         return ctx
@@ -134,8 +135,49 @@ class BookDeleteView(DeleteView):
         ctx = super().get_context_data()
         message_to_teacher = """
         W tym widoku usuwam rekord z bazy core_book ||
-        SQL z ORM: DELETE FROM "core_book" WHERE "core_book"."id" IN (11); args=(11,)
+        SQL z ORM: DELETE FROM "core_book" WHERE "core_book"."id" IN (11);
         """
         ctx.update({"message": message_to_teacher})
         return ctx
 
+class BorrowerListView(ListView):
+    """Borrower list view"""
+
+    context_object_name = "borrowers"
+    model = Borrower
+    template_name = "borrower/list.html"
+    queryset = Borrower.objects.all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super().get_context_data()
+        message_to_teacher = """
+        W tym widoku wyświetlam wszystkich czytelników ||
+        SELECT "core_borrower"."id", "core_borrower"."type", "core_borrower"."full_name" FROM "core_borrower";
+        """
+        ctx.update({"message": message_to_teacher})
+        return ctx
+
+
+class BorrowerCreateView(CreateView):
+    """Borrower create view"""
+
+    fields = ("full_name", "type")
+    model = Borrower
+    template_name = "borrower/create.html"
+
+    def get_success_url(self):
+        """Add additional context data"""
+
+        return reverse("library:borrower_list")
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Add additional context data"""
+
+        ctx = super().get_context_data()
+        message_to_teacher = """
+        W tym dodaję rekord do tabeli core_borrower || SQL z ORM:
+        INSERT INTO "core_borrower" ("type", "full_name")
+        VALUES ('PENSIONER', 'Robert Malinowski') RETURNING "core_borrower"."id";
+        """
+        ctx.update({"message": message_to_teacher})
+        return ctx

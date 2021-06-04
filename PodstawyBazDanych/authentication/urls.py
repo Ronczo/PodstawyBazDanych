@@ -1,6 +1,8 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
+from .views import signup
+
 app_name = "authentication"
 
 urlpatterns = [
@@ -16,4 +18,5 @@ urlpatterns = [
         auth_views.LogoutView.as_view(),
         name="logout",
     ),
+    path('accounts/signup/', signup, name='signup'),
 ]
