@@ -15,8 +15,9 @@ class BookListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         ctx = super().get_context_data()
         message_to_teacher = """
-        W tym widoku wyświetlam wszystkie książki
-        SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent" FROM "core_book",
+        W tym widoku wyświetlam wszystkie książki ||
+        SQL z ORM: SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent"
+         FROM "core_book", ||
         czyli SELECT * FROM core_book;
         """
         ctx.update({"message": message_to_teacher})
@@ -26,7 +27,7 @@ class BookListView(ListView):
 class BookCreateView(CreateView):
     """Book create view"""
 
-    fields = ('title', 'authors', 'is_lent')
+    fields = ("title", "authors", "is_lent")
     model = Book
     template_name = "book/create.html"
 
@@ -40,7 +41,9 @@ class BookCreateView(CreateView):
 
         ctx = super().get_context_data()
         message_to_teacher = """
-        W tym dodaję rekord do tabeli core_book 
+        W tym dodaję rekord do tabeli core_book ||
+        SQL z ORM: INSERT INTO "core_book" ("title", "authors", "is_lent") VALUES ('asdd', 'asdd', false)
+        RETURNING "core_book"."id"; args=('asdd', 'asdd', False)
         """
         ctx.update({"message": message_to_teacher})
         return ctx
@@ -66,10 +69,11 @@ class BookListToEdit(ListView):
         ctx.update({"message": message_to_teacher})
         return ctx
 
+
 class BookEditView(UpdateView):
     """Book edit view"""
 
-    fields = ('title', 'authors', 'is_lent')
+    fields = ("title", "authors", "is_lent")
     model = Book
     template_name = "book/update.html"
 
@@ -77,6 +81,18 @@ class BookEditView(UpdateView):
         """redirect after successful edition"""
 
         return reverse("library:book_list")
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Add additional context data"""
+
+        ctx = super().get_context_data()
+        message_to_teacher = """
+        W tym edytuję rekord z tabeli core_book ||
+        SQL z ORM: UPDATE "core_book" SET "title" = 'Tytuł 122', "authors" = 'Autor 12222', "is_lent" = true
+         WHERE "core_book"."id" = 1; args=('Tytuł 122', 'Autor 12222', True, 1)
+        """
+        ctx.update({"message": message_to_teacher})
+        return ctx
 
 
 class BookListToDeleteView(ListView):
@@ -99,6 +115,7 @@ class BookListToDeleteView(ListView):
         ctx.update({"message": message_to_teacher})
         return ctx
 
+
 class BookDeleteView(DeleteView):
     """Book delete view"""
 
@@ -110,3 +127,15 @@ class BookDeleteView(DeleteView):
         """redirect after successful edition"""
 
         return reverse("library:book_list_to_delete")
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Add additional context data"""
+
+        ctx = super().get_context_data()
+        message_to_teacher = """
+        W tym widoku usuwam rekord z bazy core_book ||
+        SQL z ORM: DELETE FROM "core_book" WHERE "core_book"."id" IN (11); args=(11,)
+        """
+        ctx.update({"message": message_to_teacher})
+        return ctx
+

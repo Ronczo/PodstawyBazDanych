@@ -2,11 +2,17 @@
 {% block title %}Bilioteka - Lista książek{% endblock %}
 
 {% block content %}
-
-<form method="post">
-    {% csrf_token %}
-    <p>Jesteś pewny, że chcesz usunąć {{ book.title }} - {{ book.authors}}?</p>
-    <input type="submit" value="Usuń">
-</form>
+<div class="row" style="background: azure; margin-top: 30px;">
+    <div class="col-sx-12" style="margin: auto">
+        {{ message }}
+    </div>
+</div>
+<div style="margin-top: 20px;">
+    <form method="post">
+        {% csrf_token %}
+        <p>Jesteś pewny, że chcesz usunąć {{ book.title }} - {{ book.authors}}?</p>
+        <input type="submit" value="Usuń">
+    </form>
+</div>
 
 {% endblock %}
