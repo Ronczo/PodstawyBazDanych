@@ -4,7 +4,6 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from core.models import Book, Borrower
 
 
-
 class BookListView(ListView):
     """Book list view"""
 
@@ -14,14 +13,16 @@ class BookListView(ListView):
     queryset = Book.objects.all()
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """Add additional context data"""
+
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym widoku wyświetlam wszystkie książki ||
-        SQL z ORM: SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent"
-         FROM "core_book", ||
+        message_to_teacher = "W tym widoku wyświetlam wszystkie książki"
+        sql = """
+        -SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent"
+        FROM "core_book", ||
         czyli SELECT * FROM core_book;
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
 
 
@@ -41,12 +42,12 @@ class BookCreateView(CreateView):
         """Add additional context data"""
 
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym dodaję rekord do tabeli core_book ||
-        SQL z ORM: INSERT INTO "core_book" ("title", "authors", "is_lent") VALUES ('asdd', 'asdd', false)
+        message_to_teacher = "W tym dodaję rekord do tabeli core_book"
+        sql = """
+        -INSERT INTO "core_book" ("title", "authors", "is_lent") VALUES ('asdd', 'asdd', false)
         RETURNING "core_book"."id"; 
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
 
 
@@ -56,18 +57,21 @@ class BookListToEdit(ListView):
     context_object_name = "books"
     model = Book
     template_name = "book/list_to_edit.html"
-    queryset = Book.objects.all()
+    queryset = Book.objects.filter(lendment__isnull=True)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Add additional context data"""
 
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym widoku wyświetlam wszystkie książki do edycji
-        SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent" FROM "core_book",
-        czyli SELECT * FROM core_book;
+        message_to_teacher = (
+            "W tym widoku wyświetlam wszystkie książki do edycji (książka nie może być wypożyczona)"
+        )
+        sql = """
+        -SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent" 
+        FROM "core_book" LEFT OUTER JOIN "core_lendment" ON ("core_book"."id" = "core_lendment"."book_id") 
+        WHERE "core_lendment"."id" IS NULL;
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
 
 
@@ -87,12 +91,12 @@ class BookEditView(UpdateView):
         """Add additional context data"""
 
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym edytuję rekord z tabeli core_book ||
-        SQL z ORM: UPDATE "core_book" SET "title" = 'Tytuł 122', "authors" = 'Autor 12222', "is_lent" = true
+        message_to_teacher = "W tym edytuję rekord z tabeli core_book"
+        sql = """
+        -UPDATE "core_book" SET "title" = 'Tytuł 122', "authors" = 'Autor 12222', "is_lent" = true
          WHERE "core_book"."id" = 1;
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
 
 
@@ -102,18 +106,21 @@ class BookListToDeleteView(ListView):
     context_object_name = "books"
     model = Book
     template_name = "book/list_to_delete.html"
-    queryset = Book.objects.all()
+    queryset = Book.objects.filter(lendment__isnull=True)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Add additional context data"""
 
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym widoku wyświetlam wszystkie książki do usunięcia
-        SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent" FROM "core_book",
-        czyli SELECT * FROM core_book;
+        message_to_teacher = "W tym widoku wyświetlam wszystkie książki do usunięcia (książka nie może być wypożyczona)"
+
+        sql = """
+        -SELECT "core_book"."id", "core_book"."title", "core_book"."authors", "core_book"."is_lent"
+        FROM "core_book" LEFT OUTER JOIN "core_lendment"
+        ON ("core_book"."id" = "core_lendment"."book_id") 
+        WHERE "core_lendment"."id" IS NULL;
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
 
 
@@ -133,12 +140,13 @@ class BookDeleteView(DeleteView):
         """Add additional context data"""
 
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym widoku usuwam rekord z bazy core_book ||
+        message_to_teacher = "W tym widoku usuwam rekord z bazy core_book"
+        sql = """
         SQL z ORM: DELETE FROM "core_book" WHERE "core_book"."id" IN (11);
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
+
 
 class BorrowerListView(ListView):
     """Borrower list view"""
@@ -149,12 +157,15 @@ class BorrowerListView(ListView):
     queryset = Borrower.objects.all()
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        """Add additional context data"""
+
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym widoku wyświetlam wszystkich czytelników ||
-        SELECT "core_borrower"."id", "core_borrower"."type", "core_borrower"."full_name" FROM "core_borrower";
+        message_to_teacher = "W tym widoku wyświetlam wszystkich czytelników"
+
+        sql = """
+        -SELECT "core_borrower"."id", "core_borrower"."type", "core_borrower"."full_name" FROM "core_borrower";
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
 
 
@@ -174,10 +185,32 @@ class BorrowerCreateView(CreateView):
         """Add additional context data"""
 
         ctx = super().get_context_data()
-        message_to_teacher = """
-        W tym dodaję rekord do tabeli core_borrower || SQL z ORM:
-        INSERT INTO "core_borrower" ("type", "full_name")
+        message_to_teacher = "W tym widoku dodaję rekord do tabeli core_borrower"
+        sql = """
+        -INSERT INTO "core_borrower" ("type", "full_name")
         VALUES ('PENSIONER', 'Robert Malinowski') RETURNING "core_borrower"."id";
         """
-        ctx.update({"message": message_to_teacher})
+        ctx.update({"message": message_to_teacher, "sql": sql})
+        return ctx
+
+
+class BookListToLendView(ListView):
+    """Book list to lend view"""
+
+    context_object_name = "books"
+    model = Book
+    template_name = "book/list_to_delete.html"
+    queryset = Book.objects.filter(lendment__isnull=True)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        """Add additional context data"""
+
+        ctx = super().get_context_data()
+        message_to_teacher = """
+        W tym widoku pobieram listę dostępnych książek do wypożyczenia (książka nie może być wypożyczona
+        """
+        sql = """
+        
+        """
+        ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
