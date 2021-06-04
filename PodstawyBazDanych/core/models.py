@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 
@@ -76,3 +77,12 @@ class Lendment(models.Model):
 
     def __str__(self):
         return f"{self.book} borrowed by {self.borrower}"
+
+class Rating(models.Model):
+    """Rating model"""
+
+    rate = models.PositiveSmallIntegerField(default=3, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="rating")
+
+    def __str__(self):
+        return f"{self.rate} - {self.book}"

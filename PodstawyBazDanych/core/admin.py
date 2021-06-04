@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Book, Borrower, Lendment, Author
+from .models import Book, Borrower, Lendment, Author, Rating
 
 
 @admin.register(Book)
@@ -16,14 +16,20 @@ class BorrowerAdmin(admin.ModelAdmin):
 
 @admin.register(Lendment)
 class LendmentAdmin(admin.ModelAdmin):
-    """Borrower Admin"""
+    """Lendment Admin"""
 
     fields = ("borrower", "book")
 
 
 @admin.register(Author)
-class LendmentAdmin(admin.ModelAdmin):
-    """Borrower Admin"""
+class AuthorAdmin(admin.ModelAdmin):
+    """Author Admin"""
 
     fields = ("full_name",)
 
+
+@admin.register(Rating)
+class RatingAdmin(admin.ModelAdmin):
+    """Rating Admin"""
+
+    fields = ("rate", "book")

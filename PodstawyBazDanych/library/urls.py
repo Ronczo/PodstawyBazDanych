@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import BookListView, BookCreateView, BookEditView, BookListToDeleteView, BookListToEdit, BookDeleteView, \
     BorrowerListView, BorrowerCreateView, BookListToLendView, BookLendView, AuthorCreateView, BookListToReturn, \
-    return_book
+    return_book, BookListToRate, RateBookView
 
 app_name = "library"
 
@@ -16,6 +16,8 @@ urlpatterns = [
     path("book-create/", BookCreateView.as_view(), name="book_create"),
     path("book-update/<int:pk>/", BookEditView.as_view(), name="book_update"),
     path("book-delete/<int:pk>/", BookDeleteView.as_view(), name="book_delete"),
+    path("book-list-to-rate/", BookListToRate.as_view(), name="book_list_to_rate"),
+    path("book-rate/<int:pk>/", RateBookView.as_view(), name="book_rate"),
     # borrower
     path("borrower-list/", BorrowerListView.as_view(), name="borrower_list"),
     path("borrower-create/", BorrowerCreateView.as_view(), name="borrower_create"),

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Bilioteka - Lista książek do usunięcia{% endblock %}
+
+{% block content %}
+<div class="row" style="background: azure; margin-top: 30px;">
+    <div class="col-sx-12" style="margin: auto">
+        <p>{{ message }}</p>
+        <p>SQL z ORM: {{ sql }}
+    </div>
+</div>
+<div class="row" style="background: #A1C6EA; margin-top: 30px;">
+    <div class="col-xs-3">
+        Tytuł
+    </div>
+    <div class="col-xs-3">
+        Autor/Autorzy
+    </div>
+    <div class="col-xs-3">
+        Status
+    </div>
+</div>
+{% for book in books %}
+    <div class="row" style="background: #A1C6EA; margin-top: 10px;">
+
+        <div class="col-xs-3">
+            {{ book.title }}
+        </div>
+        <div class="col-xs-3">
+            {{ book.author }}
+        </div>
+        <div class="col-xs-3">
+            {{ book.is_lent }}
+        </div>
+        <div class="col-xs-3">
+            <a href="{% url 'library:book_rate' book.id %}">Oceń</a>
+
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
