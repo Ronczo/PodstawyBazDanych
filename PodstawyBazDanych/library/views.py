@@ -1,5 +1,7 @@
+from django.db.models import Count, Max
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
 
 from core.models import Book, Borrower, Author
@@ -318,6 +320,7 @@ class BookListToReturn(ListView):
         ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
 
+
 def return_book(request, pk):
     """Return book view"""
 
@@ -328,19 +331,16 @@ def return_book(request, pk):
     -UPDATE "core_book" SET "title" = 'Szkoła tańca', "author_id" = 1, "is_lent" = false, "genre" = 'ROMANCE'
      WHERE "core_book"."id" = 3;
     """
-    context = {
-        "book": book,
-        "message": message_to_teacher,
-        "sql": sql
-    }
+    context = {"book": book, "message": message_to_teacher, "sql": sql}
 
-    if request.method == 'POST':
-        if 'return' in request.POST:
+    if request.method == "POST":
+        if "return" in request.POST:
             book.is_lent = False
             book.save()
             return redirect("core:home")
 
     return render(request, template_name, context)
+
 
 class BookListToRate(ListView):
     """Book list to rate view"""
@@ -349,8 +349,6 @@ class BookListToRate(ListView):
     context_object_name = "books"
     template_name = "book/list_to_rate.html"
     queryset = Book.objects.all().select_related("author")
-
-
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Add additional context data"""
@@ -364,11 +362,13 @@ class BookListToRate(ListView):
         """
         ctx.update({"message": message_to_teacher, "sql": sql})
         return ctx
+
+
 class RateBookView(FormView):
+    """Rate book view"""
 
     form_class = RateBookForm
     template_name = "library/rate_book_form.html"
-
 
     def get_context_data(self, *, object_list=None, **kwargs):
         """Add additional context data"""
@@ -389,7 +389,6 @@ class RateBookView(FormView):
         initial = {"book": book}
         return initial
 
-
     def get_success_url(self):
         """Redirect user after creation"""
 
@@ -406,3 +405,39 @@ class RateBookView(FormView):
             rate.save()
 
         return super().form_valid(form)
+
+
+class Statistics(View):
+
+    def get(self, request):
+        template_name = "library/statistics.html"
+
+        books_amount = Book.objects.all().count()
+        books_amount_sql = """-SELECT COUNT(*) AS "__count" FROM "core_book";"""
+        borrowers_amount = Borrower.objects.all().count()
+        borrowers_amount_sql = """-SELECT COUNT(*) AS "__count" FROM "core_borrower"; """
+        authors_amount = Author.objects.all().count()
+        authors_amount_sql = """-SELECT COUNT(*) AS "__count" FROM "core_author";"""
+        top_3_author_by_number_of_books = Author.objects.annotate(num_books=Count('book')).order_by('-num_books')[:3]
+        top_3_author_by_number_of_books_sql = """
+        "core_author"."id", "core_author"."full_name", COUNT("core_book"."id") AS "num_books" 
+        FROM "core_author" LEFT OUTER JOIN "core_book" ON ("core_author"."id" = "core_book"."author_id") 
+        GROUP BY "core_author"."id" ORDER BY "num_books" DESC LIMIT 3;
+        """
+
+
+
+
+        context = {
+            "books_amount": books_amount,
+            "books_amount_sql": books_amount_sql,
+            "borrowers_amount": borrowers_amount,
+            "borrowers_amount_sql": borrowers_amount_sql,
+            "authors_amount": authors_amount,
+            "authors_amount_sql": authors_amount_sql,
+            "top_3_author_by_number_of_books": top_3_author_by_number_of_books,
+            "top_3_author_by_number_of_books_sql": top_3_author_by_number_of_books_sql,
+
+
+        }
+        return render(request, template_name, context)

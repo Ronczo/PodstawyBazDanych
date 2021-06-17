@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Bilioteka - Lista książek do usunięcia{% endblock %}
+
+{% block content %}
+
+<div class="row" style="background: azure; margin-top: 30px;">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-12">
+        <p>Ilość książek w bibliotece: {{ books_amount }}</p>
+        <p>SQL: {{ books_amount_sql }}</p>
+    </div>
+</div>
+<div class="row" style="background: #e3d9bf">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Ilość czytelników w bibliotece: {{ borrowers_amount }}</p>
+        <p>SQL: {{ borrowers_amount_sql }}</p>
+    </div>
+</div>
+<div class="row" style="background: azure">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Ilość autorów w bibliotece: {{ authors_amount }}</p>
+        <p>SQL: {{ authors_amount_sql }}</p>
+    </div>
+</div>
+<div class="row" style="background: #e3d9bf">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Autorzy z największa ilością książek:</p>
+        {% for author in top_3_author_by_number_of_books %}
+            {{ author }} - {{ author.num_books }}<br>
+        {% endfor %}
+        <p>SQL: {{ top_3_author_by_number_of_books_sql }}</p>
+    </div>
+</div>
+
+{% endblock %}
