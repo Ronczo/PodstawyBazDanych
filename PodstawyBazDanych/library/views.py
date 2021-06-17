@@ -1,4 +1,4 @@
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Avg
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views import View
@@ -408,7 +408,6 @@ class RateBookView(FormView):
 
 
 class Statistics(View):
-
     def get(self, request):
         template_name = "library/statistics.html"
 
@@ -418,15 +417,49 @@ class Statistics(View):
         borrowers_amount_sql = """-SELECT COUNT(*) AS "__count" FROM "core_borrower"; """
         authors_amount = Author.objects.all().count()
         authors_amount_sql = """-SELECT COUNT(*) AS "__count" FROM "core_author";"""
-        top_3_author_by_number_of_books = Author.objects.annotate(num_books=Count('book')).order_by('-num_books')[:3]
+        top_3_author_by_number_of_books = Author.objects.annotate(num_books=Count("book")).order_by(
+            "-num_books"
+        )[:3]
         top_3_author_by_number_of_books_sql = """
         "core_author"."id", "core_author"."full_name", COUNT("core_book"."id") AS "num_books" 
         FROM "core_author" LEFT OUTER JOIN "core_book" ON ("core_author"."id" = "core_book"."author_id") 
         GROUP BY "core_author"."id" ORDER BY "num_books" DESC LIMIT 3;
         """
+        average_book_rating = Book.objects.all().aggregate(Avg("rating__rate"))
+        average_book_rating_sql = """-
+        SELECT AVG("core_rating"."rate")
+        AS "rating__rate__avg" FROM "core_book"
+        LEFT OUTER JOIN "core_rating"
+        ON ("core_book"."id" = "core_rating"."book_id");
+        """
+        book_with_avg_rate = (
+            Book.objects.all()
+            .filter(rating__rate__isnull=False)
+            .annotate(avg_rate=Avg("rating__rate"))
+        )
+        books_with_avg_rate_sql = """-
+        SELECT "core_book"."id", "core_book"."title", "core_book"."author_id",
+         "core_book"."is_lent", "core_book"."genre",
+         AVG("core_rating"."rate") AS "avg_rate" FROM "core_book" 
+         INNER JOIN "core_rating" ON ("core_book"."id" = "core_rating"."book_id") WHERE "core_rating"."rate" 
+         IS NOT NULL GROUP BY "core_book"."id";
+         """
+        book_with_highest_rate = (
+            Book.objects.all()
+            .filter(rating__rate__isnull=False)
+            .annotate(avg_rate=Avg("rating__rate"))
+            .order_by("-avg_rate")
+            .first()
+        )
 
-
-
+        book_with_highest_rate_sql = """-
+        SELECT "core_book"."id", "core_book"."title", "core_book"."author_id",
+        "core_book"."is_lent", "core_book"."genre", 
+        AVG("core_rating"."rate") AS "avg_rate" FROM "core_book" 
+        INNER JOIN "core_rating" ON ("core_book"."id" = "core_rating"."book_id") 
+        WHERE "core_rating"."rate" IS NOT NULL GROUP BY "core_book"."id" ORDER BY 
+        "avg_rate" DESC LIMIT 1;
+        """
 
         context = {
             "books_amount": books_amount,
@@ -437,7 +470,12 @@ class Statistics(View):
             "authors_amount_sql": authors_amount_sql,
             "top_3_author_by_number_of_books": top_3_author_by_number_of_books,
             "top_3_author_by_number_of_books_sql": top_3_author_by_number_of_books_sql,
-
+            "average_book_rating": average_book_rating["rating__rate__avg"],
+            "average_book_rating_sql": average_book_rating_sql,
+            "book_with_avg_rate": book_with_avg_rate,
+            "book_with_avg_rate_sql": books_with_avg_rate_sql,
+            "book_with_highest_rate": book_with_highest_rate,
+            "book_with_highest_rate_sql": book_with_highest_rate_sql,
 
         }
         return render(request, template_name, context)

@@ -34,5 +34,32 @@
         <p>SQL: {{ top_3_author_by_number_of_books_sql }}</p>
     </div>
 </div>
+<div class="row" style="background: azure">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Średnia ocena wszystkich książek: {{ average_book_rating }}</p>
+        <p>SQL: {{ average_book_rating_sql }}</p>
+    </div>
+</div>
+<div class="row" style="background: #e3d9bf">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Książki i ich średnia ocena (tylko ocenione książki):</p>
+        {% for book in book_with_avg_rate %}
+        <p>{{ book }} - {{ book.avg_rate }}</p>
+        {% endfor %}
+        <p>SQL: {{ book_with_avg_rate_sql }}</p>
+    </div>
+</div>
+<div class="row" style="background: azure">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Najlepiej oceniona książka: {{ book_with_highest_rate }}, Ocena: {{ book_with_highest_rate.avg_rate }}</p>
+        <p>SQL: {{ book_with_highest_rate_sql }}</p>
+    </div>
+</div>
 
+{{book_with_avg_rate2}}
 {% endblock %}
+
+e
