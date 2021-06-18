@@ -58,8 +58,32 @@
         <p>SQL: {{ book_with_highest_rate_sql }}</p>
     </div>
 </div>
+<div class="row" style="background: #e3d9bf">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Najczęściej oceniana książka: {{ most_rated_book }}, oceniono: {{ most_rated_book.rate_amount }} raz(y)</p>
 
-{{book_with_avg_rate2}}
+        <p>SQL: {{ book_with_avg_rate_sql }}</p>
+    </div>
+</div>
+<div class="row" style="background: azure">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>5 najlepiej wypożycanych książek:</p>
+        {% for book in five_most_hired_books %}
+        <p>{{ book }}, wypożyczeń: {{ book.hires }}</p>
+        {% endfor %}
+        <p>SQL: {{ five_most_hired_books_sql }}</p>
+    </div>
+</div>
+<div class="row" style="background: #e3d9bf">
+    <div class="col-xs-5"></div>
+    <div class="col-sx-7">
+        <p>Czytelnik z największą ilością wypożyczeń: {{ best_reader }}, wypożyczeń: {{ best_reader.hired_books }}</p>
+
+        <p>SQL: {{ book_with_avg_rate_sql }}</p>
+    </div>
+</div>
 {% endblock %}
 
 e

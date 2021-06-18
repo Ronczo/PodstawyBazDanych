@@ -451,7 +451,6 @@ class Statistics(View):
             .order_by("-avg_rate")
             .first()
         )
-
         book_with_highest_rate_sql = """-
         SELECT "core_book"."id", "core_book"."title", "core_book"."author_id",
         "core_book"."is_lent", "core_book"."genre", 
@@ -460,6 +459,38 @@ class Statistics(View):
         WHERE "core_rating"."rate" IS NOT NULL GROUP BY "core_book"."id" ORDER BY 
         "avg_rate" DESC LIMIT 1;
         """
+        most_rated_book = (
+            Book.objects.all()
+            .annotate(rate_amount=Count("rating__rate"))
+            .order_by("-rate_amount")
+            .first()
+        )
+        most_rated_book_sql = """-
+        "core_book"."id", "core_book"."title", "core_book"."author_id", "core_book"."is_lent", "core_book"."genre", 
+        COUNT("core_rating"."rate") AS "rate_amount" FROM "core_book" 
+        LEFT OUTER JOIN "core_rating" ON ("core_book"."id" = "core_rating"."book_id") 
+        GROUP BY "core_book"."id" ORDER BY "rate_amount" DESC LIMIT 1;"""
+        five_most_hired_books = (
+            Book.objects.all().annotate(hires=Count("lendment")).order_by("-hires")[:5]
+        )
+        five_most_hired_books_sql = """-
+        SELECT "core_book"."id", "core_book"."title", "core_book"."author_id",
+         "core_book"."is_lent", "core_book"."genre", 
+         COUNT("core_lendment"."id") AS "hires" FROM "core_book" 
+         LEFT OUTER JOIN "core_lendment" ON ("core_book"."id" = "core_lendment"."book_id") 
+         GROUP BY "core_book"."id" ORDER BY "hires" DESC LIMIT 5;"""
+        best_reader = (
+            Borrower.objects.all()
+            .annotate(hired_books=Count("lendment"))
+            .order_by("-hired_books")
+            .first()
+        )
+        best_reader_sql = """-
+        SELECT "core_borrower"."id", "core_borrower"."type", "core_borrower"."full_name", 
+        COUNT("core_lendment"."id") AS "hired_books" 
+        FROM "core_borrower" 
+        LEFT OUTER JOIN "core_lendment" ON ("core_borrower"."id" = "core_lendment"."borrower_id") 
+        GROUP BY "core_borrower"."id" ORDER BY "hired_books" DESC LIMIT 1;"""
 
         context = {
             "books_amount": books_amount,
@@ -476,6 +507,12 @@ class Statistics(View):
             "book_with_avg_rate_sql": books_with_avg_rate_sql,
             "book_with_highest_rate": book_with_highest_rate,
             "book_with_highest_rate_sql": book_with_highest_rate_sql,
+            "most_rated_book": most_rated_book,
+            "most_rated_book_sql": most_rated_book_sql,
+            "five_most_hired_books": five_most_hired_books,
+            "five_most_hired_books_sql": five_most_hired_books_sql,
+            "best_reader": best_reader,
+            "best_reader_sql": best_reader_sql,
 
         }
         return render(request, template_name, context)
